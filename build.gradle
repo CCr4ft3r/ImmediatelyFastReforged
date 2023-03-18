@@ -16,7 +16,7 @@ plugins {
 apply plugin: 'org.spongepowered.mixin'
 
 group = 'net.raphimc'
-version = mod_version
+version = "${mc_version}-${mod_version}"
 
 java {
     archivesBaseName = 'ImmediatelyFastReforged'
