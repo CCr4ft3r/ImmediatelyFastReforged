@@ -1,0 +1,32 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "net.raphimc.immediatelyfast.injection.mixins",
+  "compatibilityLevel": "JAVA_8",
+  "refmap": "immediatelyfast.refmap.json",
+  "mixins": [
+    "core.MixinTextureManager",
+    "fast_text_lookup.ISinglePreparationResourceReloader",
+    "font_atlas_resizing.MixinGlyphAtlasTexture",
+    "hud_batching.MixinInGameHud",
+    "hud_batching.consumer.MixinTextRenderer"
+  ],
+  "client": [
+    "core.MixinBufferBuilder",
+    "core.MixinDebugHud",
+    "core.MixinRenderLayer",
+    "core.MixinVertexConsumerProvider",
+    "fast_buffer_upload.MixinVertexBuffer",
+    "fast_text_lookup.MixinFontManager",
+    "hud_batching.MixinDebugHud",
+    "hud_batching.MixinMinecraftClient",
+    "hud_batching.consumer.MixinDrawableHelper",
+    "hud_batching.consumer.MixinItemRenderer",
+    "map_atlas_generation.MixinMapRenderer",
+    "map_atlas_generation.MixinMapRenderer_MapTexture"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "plugin": "net.raphimc.immediatelyfast.injection.ImmediatelyFastMixinPlugin"
+}
