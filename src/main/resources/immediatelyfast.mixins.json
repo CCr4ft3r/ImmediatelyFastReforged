@@ -2,16 +2,14 @@
   "required": true,
   "minVersion": "0.8",
   "package": "net.raphimc.immediatelyfast.injection.mixins",
-  "compatibilityLevel": "JAVA_8",
+  "compatibilityLevel": "JAVA_17",
   "refmap": "immediatelyfast.refmap.json",
-  "mixins": [
+  "client": [
     "core.MixinTextureManager",
     "fast_text_lookup.ISinglePreparationResourceReloader",
     "font_atlas_resizing.MixinGlyphAtlasTexture",
     "hud_batching.MixinInGameHud",
-    "hud_batching.consumer.MixinTextRenderer"
-  ],
-  "client": [
+    "hud_batching.consumer.MixinTextRenderer",
     "core.MixinBufferBuilder",
     "core.MixinDebugHud",
     "core.MixinRenderLayer",
@@ -27,6 +25,9 @@
   ],
   "injectors": {
     "defaultRequire": 1
+  },
+  "overwrites": {
+    "requireAnnotations": true
   },
   "plugin": "net.raphimc.immediatelyfast.injection.ImmediatelyFastMixinPlugin"
 }

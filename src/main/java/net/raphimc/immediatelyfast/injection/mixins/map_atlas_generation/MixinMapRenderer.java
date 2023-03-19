@@ -17,15 +17,18 @@
  */
 package net.raphimc.immediatelyfast.injection.mixins.map_atlas_generation;
 
-import net.raphimc.immediatelyfast.feature.map_atlas_generation.MapAtlasTexture;
-import net.raphimc.immediatelyfast.injection.interfaces.IMapRenderer;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import net.minecraft.client.gui.MapRenderer;
+import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
+import net.raphimc.immediatelyfast.feature.map_atlas_generation.MapAtlasTexture;
+import net.raphimc.immediatelyfast.injection.interfaces.IMapRenderer;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -34,6 +37,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(MapRenderer.class)
 public abstract class MixinMapRenderer implements IMapRenderer {
+
+    @Shadow
+    @Final
+    TextureManager textureManager;
 
     @Unique
     private final Int2ObjectMap<MapAtlasTexture> mapAtlasTextures = new Int2ObjectOpenHashMap<>();
@@ -77,4 +84,8 @@ public abstract class MixinMapRenderer implements IMapRenderer {
         return this.mapIdToAtlasMapping.getOrDefault(mapId, -1);
     }
 
+    @Override
+    public TextureManager getTextureManager() {
+        return textureManager;
+    }
 }

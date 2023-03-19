@@ -25,18 +25,15 @@ public class ImmediatelyFast {
     public static final String MOD_ID = "immediatelyfast";
 
     public ImmediatelyFast() {
-        if (ModList.get().isLoaded(MOD_ID)) {
-            LOGGER.info("Loading ImmediatelyFast");
-        }
+        LOGGER.info("Loading ImmediatelyFast");
         if (ModList.get().isLoaded("oculus")) {
             LOGGER.info("Found Oculus. Enabling compatibility.");
             IrisCompat.init();
         }
-        //System.load("C:\\Program Files\\RenderDoc\\renderdoc.dll");
     }
 
     public static void loadConfig() {
-        final File configFile = FMLPaths.CONFIGDIR.get().resolve("immediatelyfast.mixins.json").toFile();
+        final File configFile = FMLPaths.CONFIGDIR.get().resolve(MOD_ID + ".json").toFile();
         if (configFile.exists()) {
             try {
                 config = new Gson().fromJson(new FileReader(configFile), ImmediatelyFastConfig.class);

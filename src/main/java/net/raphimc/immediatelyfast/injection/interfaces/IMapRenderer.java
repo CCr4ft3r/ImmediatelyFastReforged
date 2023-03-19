@@ -17,6 +17,7 @@
  */
 package net.raphimc.immediatelyfast.injection.interfaces;
 
+import net.minecraft.client.renderer.texture.TextureManager;
 import net.raphimc.immediatelyfast.feature.map_atlas_generation.MapAtlasTexture;
 
 public interface IMapRenderer {
@@ -24,5 +25,7 @@ public interface IMapRenderer {
     MapAtlasTexture getMapAtlasTexture(int id);
 
     int getAtlasMapping(final int mapId);
+
+    TextureManager getTextureManager();
 
 }

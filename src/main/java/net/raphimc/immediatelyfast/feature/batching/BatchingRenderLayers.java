@@ -23,6 +23,7 @@ import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.RenderType;
+import net.raphimc.immediatelyfast.ImmediatelyFast;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.Map;
@@ -37,7 +38,7 @@ import static net.minecraft.Util.*;
  */
 public class BatchingRenderLayers {
 
-    public static final BiFunction<Integer, BlendFuncDepthFunc, RenderType> COLORED_TEXTURE = memoize((id, blendFuncDepthFunc) -> new ImmediatelyFastRenderLayer("texture",VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR, false, () -> {
+    public static final BiFunction<Integer, BlendFuncDepthFunc, RenderType> COLORED_TEXTURE = memoize((id, blendFuncDepthFunc) -> new ImmediatelyFastRenderLayer("texture", VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR, false, () -> {
         RenderSystem.enableBlend();
         RenderSystem.enableTexture();
         blendFuncDepthFunc.apply();
@@ -75,7 +76,6 @@ public class BatchingRenderLayers {
         RenderSystem.enableDepthTest();
     });
 
-
     public static <A> Function<A, RenderType> memoizeTemp(final Function<A, RenderType> function) {
         return new Function<>() {
             private final Map<A, RenderType> cache = CacheBuilder.newBuilder().expireAfterAccess(1, TimeUnit.SECONDS).<A, RenderType>build().asMap();
@@ -96,13 +96,10 @@ public class BatchingRenderLayers {
         };
     }
 
-
     private static class ImmediatelyFastRenderLayer extends RenderType {
 
         private ImmediatelyFastRenderLayer(final String name, final VertexFormat.Mode drawMode, final VertexFormat vertexFormat, final boolean translucent, final Runnable startAction, final Runnable endAction) {
-            super("immediatelyfast_" + name, vertexFormat, drawMode, 2048, false, translucent, startAction, endAction);
+            super(ImmediatelyFast.MOD_ID + "_" + name, vertexFormat, drawMode, 2048, false, translucent, startAction, endAction);
         }
-
     }
-
 }

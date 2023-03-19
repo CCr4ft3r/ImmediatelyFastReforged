@@ -48,6 +48,8 @@ public abstract class MixinInGameHud {
     @Shadow
     public abstract void renderCrosshair(PoseStack p_93081_);
 
+    @Shadow protected abstract void renderVehicleHealth(PoseStack p_93087_);
+
     @Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Gui;renderPlayerHealth(Lcom/mojang/blaze3d/vertex/PoseStack;)V"))
     private void if$Batching1(final Gui instance, final PoseStack matrices) {
         BatchingBuffers.beginHudBatching();
@@ -58,7 +60,7 @@ public abstract class MixinInGameHud {
     @Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Gui;renderVehicleHealth(Lcom/mojang/blaze3d/vertex/PoseStack;)V"))
     private void if$Batching2(final Gui instance, final PoseStack matrices) {
         BatchingBuffers.beginHudBatching();
-        renderPlayerHealth(matrices);
+        renderVehicleHealth(matrices);
         BatchingBuffers.endHudBatching();
     }
 

@@ -20,6 +20,7 @@ package net.raphimc.immediatelyfast.feature.map_atlas_generation;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.resources.ResourceLocation;
+import net.raphimc.immediatelyfast.ImmediatelyFast;
 
 public class MapAtlasTexture implements AutoCloseable {
 
@@ -35,7 +36,7 @@ public class MapAtlasTexture implements AutoCloseable {
     public MapAtlasTexture(final int id) {
         this.id = id;
 
-        this.identifier = new ResourceLocation("immediatelyfast", "map_atlas/" + id);
+        this.identifier = new ResourceLocation(ImmediatelyFast.MOD_ID, "map_atlas/" + id);
         this.texture = new DynamicTexture(ATLAS_SIZE, ATLAS_SIZE, true);
         Minecraft.getInstance().getTextureManager().register(this.identifier, this.texture);
     }

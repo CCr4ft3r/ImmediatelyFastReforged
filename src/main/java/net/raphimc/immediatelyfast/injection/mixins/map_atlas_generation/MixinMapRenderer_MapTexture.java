@@ -17,17 +17,18 @@
  */
 package net.raphimc.immediatelyfast.injection.mixins.map_atlas_generation;
 
-import net.raphimc.immediatelyfast.ImmediatelyFast;
-import net.raphimc.immediatelyfast.feature.map_atlas_generation.MapAtlasTexture;
-import net.raphimc.immediatelyfast.injection.interfaces.IMapRenderer;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.gui.MapRenderer;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.material.MaterialColor;
 import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
+import net.raphimc.immediatelyfast.ImmediatelyFast;
+import net.raphimc.immediatelyfast.feature.map_atlas_generation.MapAtlasTexture;
+import net.raphimc.immediatelyfast.injection.interfaces.IMapRenderer;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -40,6 +41,7 @@ import static net.raphimc.immediatelyfast.feature.map_atlas_generation.MapAtlasT
 @Mixin(value = MapRenderer.MapInstance.class, priority = 1100)
 // TODO: Workaround for Porting-Lib which relies on the LVT to be intact
 public abstract class MixinMapRenderer_MapTexture {
+
     @Shadow
     private MapItemSavedData data;
 
@@ -47,6 +49,9 @@ public abstract class MixinMapRenderer_MapTexture {
     @Shadow
     @Final
     private DynamicTexture texture;
+
+    @Mutable
+    @Shadow @Final private RenderType renderType;
 
     @Unique
     private static final DynamicTexture DUMMY_TEXTURE;
@@ -68,37 +73,42 @@ public abstract class MixinMapRenderer_MapTexture {
         }
     }
 
-    @Inject(method = "<init>", at = @At(value = "RETURN", remap = false))
-    private void initAtlasParameters(MapRenderer mapRenderer, int id, MapItemSavedData state, CallbackInfo ci) {
-        final int packedLocation = ((IMapRenderer) mapRenderer).getAtlasMapping(id);
+    @Inject(method = "<init>", at = @At("RETURN"))
+    private void initAtlasParameters(MapRenderer this$0, int p_168783_, MapItemSavedData p_168784_, CallbackInfo ci) {
+        final int packedLocation = ((IMapRenderer) this$0).getAtlasMapping(p_168783_);
         if (packedLocation == -1) {
-            ImmediatelyFast.LOGGER.warn("Map " + id + " is not in an atlas");
+            this.texture = new DynamicTexture(128, 128, true);
+            ResourceLocation resourcelocation = ((IMapRenderer) this$0).getTextureManager().register("map/" + p_168783_, this.texture);
+            this.renderType = RenderType.text(resourcelocation);
+            ImmediatelyFast.LOGGER.warn("Map " + p_168783_ + " is not in an atlas");
             // Leave atlasTexture null to indicate that this map is not in an atlas, and it should use the vanilla system instead
             return;
         }
 
         this.atlasX = ((packedLocation >> 8) & 0xFF) * MAP_SIZE;
         this.atlasY = (packedLocation & 0xFF) * MAP_SIZE;
-        this.atlasTexture = ((IMapRenderer) mapRenderer).getMapAtlasTexture(packedLocation >> 16);
+        this.atlasTexture = ((IMapRenderer) this$0).getMapAtlasTexture(packedLocation >> 16);
+        this.texture = null;
+        ResourceLocation resourcelocation = atlasTexture.getIdentifier();
+        this.renderType = RenderType.text(resourcelocation);
     }
 
+    // Dirty workaround, because normally mixins cannot inject into constructors at non-return instructions - reassignment is done in initAtlasParameters
     @Redirect(method = "<init>", at = @At(value = "NEW", target = "net/minecraft/client/renderer/texture/DynamicTexture"))
     private DynamicTexture dontAllocateTexture(int width, int height, boolean useMipmaps) {
-        if (this.atlasTexture != null) {
-            return DUMMY_TEXTURE;
-        } else {
-            return new DynamicTexture(width, height, useMipmaps);
-        }
+        return DUMMY_TEXTURE;
     }
 
+    // Dirty workaround, because normally mixins cannot inject into constructors at non-return instructions - reassignment is done in initAtlasParameters
     @Redirect(method = "<init>", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/texture/TextureManager;register(Ljava/lang/String;Lnet/minecraft/client/renderer/texture/DynamicTexture;)Lnet/minecraft/resources/ResourceLocation;"))
     private ResourceLocation getAtlasTextureIdentifier(TextureManager textureManager, String id, DynamicTexture texture) {
-        if (this.atlasTexture != null) {
-            this.texture = null; // Don't leave the texture field pointing to the uninitialized dummy texture
-            return this.atlasTexture.getIdentifier();
-        } else {
-            return textureManager.register(id, texture);
-        }
+        return null;
+    }
+
+    // Dirty workaround, because normally mixins cannot inject into constructors at non-return instructions - reassignment is done in initAtlasParameters
+    @Redirect(method = "<init>", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/RenderType;text(Lnet/minecraft/resources/ResourceLocation;)Lnet/minecraft/client/renderer/RenderType;"))
+    private RenderType getAtlasTextureIdentifier(ResourceLocation p_110498_) {
+        return null;
     }
 
     @Inject(method = "updateTexture", at = @At("HEAD"), cancellable = true)
