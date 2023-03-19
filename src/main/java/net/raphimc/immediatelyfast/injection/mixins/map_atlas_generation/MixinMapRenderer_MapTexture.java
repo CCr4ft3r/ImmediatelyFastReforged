@@ -35,6 +35,8 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.Slice;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import static net.raphimc.immediatelyfast.feature.map_atlas_generation.MapAtlasTexture.*;
+
 @Mixin(value = MapRenderer.MapInstance.class, priority = 1100)
 // TODO: Workaround for Porting-Lib which relies on the LVT to be intact
 public abstract class MixinMapRenderer_MapTexture {
@@ -75,12 +77,12 @@ public abstract class MixinMapRenderer_MapTexture {
             return;
         }
 
-        this.atlasX = ((packedLocation >> 8) & 0xFF) * MapAtlasTexture.MAP_SIZE;
-        this.atlasY = (packedLocation & 0xFF) * MapAtlasTexture.MAP_SIZE;
+        this.atlasX = ((packedLocation >> 8) & 0xFF) * MAP_SIZE;
+        this.atlasY = (packedLocation & 0xFF) * MAP_SIZE;
         this.atlasTexture = ((IMapRenderer) mapRenderer).getMapAtlasTexture(packedLocation >> 16);
     }
 
-    @Redirect(method = "<init>", at = @At(value = "NEW", target = "Lnet/minecraft/client/renderer/texture/DynamicTexture;<init>(IIZ)V"), remap = false)
+    @Redirect(method = "<init>", at = @At(value = "NEW", target = "net/minecraft/client/renderer/texture/DynamicTexture"))
     private DynamicTexture dontAllocateTexture(int width, int height, boolean useMipmaps) {
         if (this.atlasTexture != null) {
             return DUMMY_TEXTURE;
@@ -109,14 +111,14 @@ public abstract class MixinMapRenderer_MapTexture {
                 throw new IllegalStateException("Atlas texture has already been closed");
             }
 
-            for (int x = 0; x < MapAtlasTexture.MAP_SIZE; x++) {
-                for (int y = 0; y < MapAtlasTexture.MAP_SIZE; y++) {
-                    final int i = x + y * MapAtlasTexture.MAP_SIZE;
-                    atlasImage.blendPixel(this.atlasX + x, this.atlasY + y, MaterialColor.getColorFromPackedId(this.data.colors[i]));
+            for (int x = 0; x < MAP_SIZE; x++) {
+                for (int y = 0; y < MAP_SIZE; y++) {
+                    final int i = x + y * MAP_SIZE;
+                    atlasImage.setPixelRGBA(this.atlasX + x, this.atlasY + y, MaterialColor.getColorFromPackedId(this.data.colors[i]));
                 }
             }
             atlasTexture.bind();
-            atlasImage.upload(0, this.atlasX, this.atlasY, this.atlasX, this.atlasY, MapAtlasTexture.MAP_SIZE, MapAtlasTexture.MAP_SIZE, false, false);
+            atlasImage.upload(0, this.atlasX, this.atlasY, this.atlasX, this.atlasY, MAP_SIZE, MAP_SIZE, false, false);
         }
     }
 
@@ -124,17 +126,17 @@ public abstract class MixinMapRenderer_MapTexture {
     private VertexConsumer drawAtlasTexture(VertexConsumer instance, float u, float v) {
         if (this.atlasTexture != null) {
             if (u == 0 && v == 1) {
-                u = (float) this.atlasX / MapAtlasTexture.ATLAS_SIZE;
-                v = (float) (this.atlasY + MapAtlasTexture.MAP_SIZE) / MapAtlasTexture.ATLAS_SIZE;
+                u = (float) this.atlasX / ATLAS_SIZE;
+                v = (float) (this.atlasY + MAP_SIZE) / ATLAS_SIZE;
             } else if (u == 1 && v == 1) {
-                u = (float) (this.atlasX + MapAtlasTexture.MAP_SIZE) / MapAtlasTexture.ATLAS_SIZE;
-                v = (float) (this.atlasY + MapAtlasTexture.MAP_SIZE) / MapAtlasTexture.ATLAS_SIZE;
+                u = (float) (this.atlasX + MAP_SIZE) / ATLAS_SIZE;
+                v = (float) (this.atlasY + MAP_SIZE) / ATLAS_SIZE;
             } else if (u == 1 && v == 0) {
-                u = (float) (this.atlasX + MapAtlasTexture.MAP_SIZE) / MapAtlasTexture.ATLAS_SIZE;
-                v = (float) this.atlasY / MapAtlasTexture.ATLAS_SIZE;
+                u = (float) (this.atlasX + MAP_SIZE) / ATLAS_SIZE;
+                v = (float) this.atlasY / ATLAS_SIZE;
             } else if (u == 0 && v == 0) {
-                u = (float) this.atlasX / MapAtlasTexture.ATLAS_SIZE;
-                v = (float) this.atlasY / MapAtlasTexture.ATLAS_SIZE;
+                u = (float) this.atlasX / ATLAS_SIZE;
+                v = (float) this.atlasY / ATLAS_SIZE;
             }
         }
 
