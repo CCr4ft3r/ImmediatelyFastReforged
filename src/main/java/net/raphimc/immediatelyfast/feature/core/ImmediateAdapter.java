@@ -17,7 +17,6 @@
  */
 package net.raphimc.immediatelyfast.feature.core;
 
-import net.raphimc.immediatelyfast.compat.IrisCompat;
 import com.google.common.collect.ImmutableMap;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -27,12 +26,15 @@ import it.unimi.dsi.fastutil.objects.ReferenceLinkedOpenHashSet;
 import it.unimi.dsi.fastutil.objects.ReferenceSet;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
+import net.raphimc.immediatelyfast.compat.IrisCompat;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+
+import static net.raphimc.immediatelyfast.util.ImmediateUtil.*;
 
 public abstract class ImmediateAdapter extends MultiBufferSource.BufferSource implements AutoCloseable {
 
@@ -58,7 +60,7 @@ public abstract class ImmediateAdapter extends MultiBufferSource.BufferSource im
     @Override
     public @NotNull VertexConsumer getBuffer(final @NotNull RenderType layer) {
         final BufferBuilder bufferBuilder = this.getOrCreateBufferBuilder(layer);
-        if (bufferBuilder.building() && !layer.canConsolidateConsecutiveGeometry()) {
+        if (bufferBuilder.building() && sharedVerticesComparator(layer.mode().primitiveStride)) {
             throw new IllegalStateException("Tried to write shared vertices into the same buffer");
         }
 
@@ -133,7 +135,8 @@ public abstract class ImmediateAdapter extends MultiBufferSource.BufferSource im
 
         for (RenderType layer : this.activeLayers) {
             for (BufferBuilder bufferBuilder : this.getBufferBuilder(layer)) {
-                bufferBuilder.end().release();
+                bufferBuilder.end();
+                bufferBuilder.clear();
             }
         }
 
@@ -148,7 +151,7 @@ public abstract class ImmediateAdapter extends MultiBufferSource.BufferSource im
     protected abstract void _draw(RenderType layer);
 
     protected BufferBuilder getOrCreateBufferBuilder(final RenderType layer) {
-        if (!layer.canConsolidateConsecutiveGeometry()) {
+        if (sharedVerticesComparator(layer.mode().primitiveStride)) {
             return this.addNewFallbackBuffer(layer);
         } else if (this.fixedBuffers.containsKey(layer)) {
             return this.fixedBuffers.get(layer);

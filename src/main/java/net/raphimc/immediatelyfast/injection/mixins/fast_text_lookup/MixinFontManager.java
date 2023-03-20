@@ -103,7 +103,7 @@ public abstract class MixinFontManager {
     }*/
 
     // 1.19.2 injection
-    @ModifyArg(method = {"createFont", "createFontFilterFishy"}, at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Font;<init>(Ljava/util/function/Function;Z)V"), require = 0)
+    @ModifyArg(method = {"createFont" }, at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Font;<init>(Ljava/util/function/Function;)V"), require = 0)
     private Function<ResourceLocation, FontSet> if$overrideFontStorage(Function<ResourceLocation, FontSet> original) {
         return id -> {
             // Fast path for default font

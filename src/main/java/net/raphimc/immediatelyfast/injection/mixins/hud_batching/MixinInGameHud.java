@@ -50,6 +50,10 @@ public abstract class MixinInGameHud {
 
     @Shadow protected abstract void renderVehicleHealth(PoseStack p_93087_);
 
+    @Shadow protected abstract void renderHotbar(float p_93010_, PoseStack p_93011_);
+
+    @Shadow protected abstract void displayScoreboardSidebar(PoseStack p_93037_, Objective p_93038_);
+
     @Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Gui;renderPlayerHealth(Lcom/mojang/blaze3d/vertex/PoseStack;)V"))
     private void if$Batching1(final Gui instance, final PoseStack matrices) {
         BatchingBuffers.beginHudBatching();
@@ -157,7 +161,7 @@ public abstract class MixinInGameHud {
     )
     private void if$Batching(Gui instance, PoseStack component1, Objective score) {
         BatchingBuffers.beginHudBatching();
-        instance.displayScoreboardSidebar(component1, score);
+        displayScoreboardSidebar(component1, score);
         BatchingBuffers.endHudBatching();
     }
 
@@ -168,11 +172,11 @@ public abstract class MixinInGameHud {
         if (ImmediatelyFast.config.experimental_item_hud_batching) {
             BatchingBuffers.beginHudBatching();
             BatchingBuffers.beginItemBatching();
-            instance.renderHotbar(tickDelta, matrices);
+            renderHotbar(tickDelta, matrices);
             BatchingBuffers.endHudBatching();
             BatchingBuffers.endItemBatching();
         } else {
-            instance.renderHotbar(tickDelta, matrices);
+            renderHotbar(tickDelta, matrices);
         }
     }
 }
