@@ -17,6 +17,7 @@ public class ImmediatelyFastConfig {
     // Experimental config values
     private final String EXPERIMENTAL_INFO = "----- Experimental config values below (Rendering glitches may occur) -----";
     public boolean experimental_item_hud_batching = false;
+    public boolean experimental_disable_error_checking = false;
 
     // Debug config values
     private final String DEBUG_INFO = "----- Debug only config values below (Do not touch) -----";

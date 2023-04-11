@@ -21,7 +21,8 @@
     "hud_batching.consumer.MixinDrawableHelper",
     "hud_batching.consumer.MixinItemRenderer",
     "map_atlas_generation.MixinMapRenderer",
-    "map_atlas_generation.MixinMapRenderer_MapTexture"
+    "map_atlas_generation.MixinMapRenderer_MapTexture",
+    "disable_error_checking.MixinGL11"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -17,14 +17,14 @@
  */
 package net.raphimc.immediatelyfast.injection.mixins.hud_batching.consumer;
 
-import net.raphimc.immediatelyfast.feature.batching.BatchingBuffers;
-import net.raphimc.immediatelyfast.feature.batching.BatchingRenderLayers;
-import net.raphimc.immediatelyfast.feature.batching.BlendFuncDepthFunc;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Matrix4f;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.util.FastColor;
+import net.raphimc.immediatelyfast.feature.batching.BatchingBuffers;
+import net.raphimc.immediatelyfast.feature.batching.BatchingRenderLayers;
+import net.raphimc.immediatelyfast.feature.batching.BlendFuncDepthFunc;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -74,5 +74,4 @@ public abstract class MixinDrawableHelper {
             vertexConsumer.vertex(matrix, x0, y0, z).uv(u0, v0).color(r, g, b, a).endVertex();
         }
     }
-
 }

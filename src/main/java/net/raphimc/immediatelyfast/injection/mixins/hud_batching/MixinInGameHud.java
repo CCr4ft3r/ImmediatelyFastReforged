@@ -68,7 +68,10 @@ public abstract class MixinInGameHud {
     private void if$Batching3(final Gui instance, final PoseStack matrices) {
         BatchingBuffers.beginHudBatching();
         renderEffects(matrices);
-        BatchingBuffers.endHudBatching();
+        // https://github.com/A5b84/status-effect-bars draws fill over texture
+        BatchingBuffers.endTextureBatching();
+        BatchingBuffers.endFillBatching();
+        BatchingBuffers.endTextBatching();
     }
 
     @Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Gui;renderCrosshair(Lcom/mojang/blaze3d/vertex/PoseStack;)V"))
